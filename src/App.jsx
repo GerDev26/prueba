@@ -5,7 +5,7 @@ import { getRamdomLetter } from './helpers/ramdomLetters'
 
 export default function App() {
 
-  const [cocktails, setCocktails] = useCocktailsByLetter("x")
+  const [cocktails, setCocktails] = useCocktailsByLetter("a")
 
   const handleClick = () => {
     setCocktails(getRamdomLetter())

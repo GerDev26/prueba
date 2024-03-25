@@ -1,22 +1,47 @@
 import { useState, useEffect } from "react";
 import { COCKTAIL_ENDPOINT_SEARCH_BY_LETTER } from "../../services/cocktails/COCKTAILS_API";
 
+export function useCocktailsMap(initialRequest = null){
+  const [request, setRequest] = useState(initialRequest)
+
+  const [mappedRequest, setMappedRequest] = useState(null);
+
+  const mapCocktails = (data) => {
+    return data.map(cocktail => ({
+      id: cocktail.idDrink,
+      name: cocktail.strDrink,
+      image: cocktail.strDrinkThumb
+    }));
+  }
+
+  useEffect(() => {
+    if (request) {
+      const mappedCocktails = mapCocktails(request);
+      setMappedRequest(mappedCocktails);
+    }
+  }, [request]);
+
+  const changeRequest = (request) => {
+    setRequest(request)
+  }
+
+  return [mappedRequest, changeRequest]
+}
+
 export function useCocktailsByLetter (initialLetter){
-  
+
   const [letter, setLetter] = useState(initialLetter);
 
-  const COCKTAIL_ENDPOINT_SEARCH_BY_LETTER = "https://www.thecocktaildb.com/api/json/v1/1/search.php?f="
-
-  const [cocktails, setCocktails] = useState(null)
+  const [request, setRequest] = useCocktailsMap(null);
 
   useEffect(() => {
     fetch(COCKTAIL_ENDPOINT_SEARCH_BY_LETTER + letter)
       .then(res => res.json())
       .then(json => {
-        setCocktails(json.drinks);
+        setRequest(json.drinks);
         
-        console.log("peticion correcta")
-        console.log(letter)
+        console.log("Petición correcta");
+        console.log(letter);
       })
       .catch(error => {
         console.log("Error en la petición: ", error);
@@ -27,13 +52,5 @@ export function useCocktailsByLetter (initialLetter){
     setLetter(newLetter)
   }
 
-  const listOfCocktails = cocktails
-    ? cocktails.map(cocktail => ({
-      id: cocktail.idDrink,
-      name: cocktail.strDrink,
-      image: cocktail.strDrinkThumb
-    }))
-    : []
-
-    return [listOfCocktails, changeLetter]
+  return [request, changeLetter]
 }
