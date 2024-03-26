@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { COCKTAIL_ENDPOINT_SEARCH_BY_LETTER } from "../../services/cocktails/COCKTAILS_API";
+import { COCKTAIL_ENDPOINT_SEARCH_BY_LETTER, COCKTAIL_ENDPOINT_RANDOM_COCKTAIL } from "../../services/cocktails/COCKTAILS_API";
 
-export function useCocktailsMap(initialRequest = null){
+function useCocktailsMap(initialRequest = null){
   const [request, setRequest] = useState(initialRequest)
 
   const [mappedRequest, setMappedRequest] = useState(null);
@@ -37,8 +37,8 @@ export function useCocktailsByLetter (initialLetter){
   useEffect(() => {
     fetch(COCKTAIL_ENDPOINT_SEARCH_BY_LETTER + letter)
       .then(res => res.json())
-      .then(json => {
-        setRequest(json.drinks);
+      .then(data => {
+        setRequest(data.drinks);
         
         console.log("Petición correcta");
         console.log(letter);
@@ -53,4 +53,20 @@ export function useCocktailsByLetter (initialLetter){
   }
 
   return [request, changeLetter]
+}
+
+export function useRandomCocktail(){
+  const [request, setRequest] = useCocktailsMap()
+
+  useEffect(() => {
+    fetch(COCKTAIL_ENDPOINT_RANDOM_COCKTAIL)
+      .then(res => res.json())
+      .then(data => {
+        setRequest(data.drinks)
+      })
+      .catch(error => {
+        console.log("Error en la peticion: ", error)
+      })
+  }, [])
+  return request
 }
