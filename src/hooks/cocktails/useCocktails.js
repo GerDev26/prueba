@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { COCKTAIL_ENDPOINT_SEARCH_BY_LETTER, COCKTAIL_ENDPOINT_RANDOM_COCKTAIL } from "../../services/cocktails/COCKTAILS_API";
+import { COCKTAIL_ENDPOINT_SEARCH_BY_LETTER, COCKTAIL_ENDPOINT_RANDOM_COCKTAIL, COCKTAIL_ENDPOINT_SEARCH_BY_COCKTAIL_NAME } from "../../services/cocktails/COCKTAILS_API";
 
 function useCocktailsMap(initialRequest = null){
   const [request, setRequest] = useState(initialRequest)
@@ -40,8 +40,8 @@ export function useCocktailsByLetter (initialLetter){
       .then(data => {
         setRequest(data.drinks);
         
-        console.log("Petición correcta");
-        console.log(letter);
+        console.log("Petición exitosa");
+        console.log("Mostrando todos los cockteles con la letra: " + letter);
       })
       .catch(error => {
         console.log("Error en la petición: ", error);
@@ -53,6 +53,32 @@ export function useCocktailsByLetter (initialLetter){
   }
 
   return [request, changeLetter]
+}
+
+export function useSearchCocktails(initialSearch){
+
+  const [request, setRequest] = useCocktailsMap(null)
+
+  const [search, setSearch] = useState(initialSearch)
+
+  useEffect(() => {
+    fetch(COCKTAIL_ENDPOINT_SEARCH_BY_COCKTAIL_NAME + search)
+    .then(res => res.json())
+    .then(data => {
+      setRequest(data.drinks)
+      console.log("Peticion exitosa")
+      console.log("Se busco: " + search)
+    })
+    .catch(error => {
+      console.log("Error en la consulta: ", error)
+    })
+  }, [search])
+
+    const searchCocktail = (newSearch) => {
+      setSearch(newSearch)
+    }
+
+    return [request, searchCocktail]
 }
 
 export function useRandomCocktail(){

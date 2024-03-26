@@ -1,26 +1,43 @@
 import './App.css'
-import { useCocktailsByLetter } from './hooks/cocktails/useCocktails'
-import { getRamdomLetter } from './helpers/ramdomLetters'
+import { useSearchCocktails } from './hooks/cocktails/useCocktails'
 import { CocktailCard } from './components/CocktailCard/CocktailCard'
 import { LoadingCocktails } from './components/CocktailCard/LoadingCocktails'
-import { RandomCocktail } from './components/RandomCocktail'
+import { useEffect, useRef } from 'react'
 
 
 export default function App() {
 
-  const [cocktails, setCocktails] = useCocktailsByLetter("a")
+  const [cocktails, setCocktails] = useSearchCocktails("")
 
-  const handleClick = () => {
-    setCocktails(getRamdomLetter())
-  }
-  const move = () => {
-    
+  const search = useRef()
+
+  const handleClick = (event) => {
+    event.preventDefault()
+    const fields = Object.fromEntries(new window.FormData(event.target));
+
+    const minusFields = Object.values(fields).map(field => (
+      field.toLowerCase()
+    ))
+    console.log(minusFields)
+  };
+
+  const handleChange = () => {
+    const value = search.current.value
+    console.log(value)
+    setCocktails(value)
   }
 
   return(
     <>
-      <button onClick={handleClick}>Buscar</button>
-      <div className='gallery'>
+      <form onSubmit={handleClick}>
+        <input ref={search} onChange={handleChange} name="1" type="text"/>
+        <input name="2" type="text"/>
+        <input name="3" type="text"/>
+        <button>Buscar</button>
+      </form>
+
+
+      <div className="gallery">
           {cocktails 
             ? cocktails.map((cocktail) => ( <CocktailCard key={cocktail.id} id={cocktail.id} name={cocktail.name} image={cocktail.image}/>))
             : <LoadingCocktails/>
